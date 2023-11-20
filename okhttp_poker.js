@@ -141,18 +141,18 @@ function printerRequest(request, logString) {
         var contentLength = requestBody[M_reqbody_contentLength]()
         if (contentLength != -1) {
             var tag = headersSize == 0 ? "└─" : "┌─"
-            logString.append("|   " + tag + "Content-Length: " + contentLength).append("\n")
+            logString.append("|I   " + tag + "Content-Length: " + contentLength).append("\n")
         }
     }
     if (headersSize == 0) {
-        logString.append("|     no headers").append("\n")
+        logString.append("|J     no headers").append("\n")
     }
     for (var i = 0; i < headersSize; i++) {
         var name = getHeaderName(headersList, i)
         if (!JavaStringWapper.$new("Content-Type").equalsIgnoreCase(name) && !JavaStringWapper.$new("Content-Length").equalsIgnoreCase(name)) {
             var value = getHeaderValue(headersList, i)
             var tag = i == (headersSize - 1) ? "└─" : "┌─"
-            logString.append("|   " + tag + name + ": " + value).append("\n")
+            logString.append("|K   " + tag + name + ": " + value).append("\n")
         }
     }
     var shielded = filterUrl(httpUrl.toString())
@@ -182,16 +182,16 @@ function printerRequest(request, logString) {
         //LOG Request Body
         try {
             if (isPlaintext(reqByteString)) {
-                logString.append(splitLine(readBufferString(reqByteString, charset), "|   ")).append("\n")
+                logString.append(splitLine(readBufferString(reqByteString, charset), "|A   ")).append("\n")
                 logString.append("|").append("\n")
                 logString.append("|" + "--> END ").append("\n")
             } else {
-                logString.append(splitLine(hexToUtf8(reqByteString.hex()), "|   ")).append("\n")
+                logString.append(splitLine(hexToUtf8(reqByteString.hex()), "|B   ")).append("\n")
                 logString.append("|").append("\n");
                 logString.append("|" + "--> END  (binary body omitted -> isPlaintext)").append("\n")
             }
         } catch (error) {
-            logString.append(splitLine(hexToUtf8(reqByteString.hex()), "|   ")).append("\n")
+            logString.append(splitLine(hexToUtf8(reqByteString.hex()), "|C   ")).append("\n")
             logString.append("|").append("\n");
             logString.append("|" + "--> END  (binary body omitted -> isPlaintext)").append("\n")
         }
@@ -226,11 +226,11 @@ function printerResponse(response, logString) {
         var respHeaderSize = getHeaderSize(respHeadersList)
         logString.append("| Response Headers: ").append("" + respHeaderSize).append("\n")
         if (respHeaderSize == 0) {
-            logString.append("|     no headers").append("\n")
+            logString.append("|L     no headers").append("\n")
         }
         for (var i = 0; i < respHeaderSize; i++) {
             var tag = i == (respHeaderSize - 1) ? "└─" : "┌─"
-            logString.append("|   " + tag + getHeaderName(respHeadersList, i) + ": " + getHeaderValue(respHeadersList, i)).append("\n")
+            logString.append("|D   " + tag + getHeaderName(respHeadersList, i) + ": " + getHeaderValue(respHeadersList, i)).append("\n")
         }
         //Body
         var content = "";
@@ -279,9 +279,9 @@ function printerResponse(response, logString) {
             if (contentLength != 0) {
                 try {
                     var content = readBufferString(rspByteString, charset)
-                    logString.append(splitLine(content, "|   ")).append("\n")
+                    logString.append(splitLine(content, "|E   ")).append("\n")
                 } catch (error) {
-                    logString.append(splitLine(hexToUtf8(rspByteString.hex()), "|   ")).append("\n")
+                    logString.append(splitLine(hexToUtf8(rspByteString.hex()), "|F   ")).append("\n")
                 }
 
                 logString.append("| ").append("\n");
@@ -446,13 +446,13 @@ function splitLine(string, tag) {
     for (var i = 0; i < lineNum; i++) {
         var start = i * 150;
         var end = (i + 1) * 150
-        newSB.append(tag)
+        // newSB.append(tag)
         if (end > newString.length()) {
             newSB.append(newString.substring(start, newString.length()))
         } else {
             newSB.append(newString.substring(start, end))
         }
-        newSB.append("\n")
+        // newSB.append("\n")
     }
     var lineStr = "";
     if (newSB.length() > 0) {
@@ -782,7 +782,7 @@ function main() {
         console.log("   >>>  history()                                      打印可重新发送的请求");
         console.log("   >>>  resend(index)                                  重新发送请求");
         console.log("----------------------------------------------------------------------------------------");
-
+        hold()
     })
 }
 
