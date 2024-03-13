@@ -23,7 +23,7 @@ var Cls_OkHttpClient = "okhttp3.OkHttpClient";
 var Cls_Request = "okhttp3.Request";
 var Cls_Response = "okhttp3.Response";
 var Cls_ResponseBody = "okhttp3.ResponseBody";
-var Cls_okio_Buffer = "okio.Buffer";
+var Cls_okio_Buffer = "b42.i";
 var F_header_namesAndValues = "namesAndValues";
 var F_req_body = "body";
 var F_req_headers = "headers";
@@ -41,7 +41,7 @@ var M_Call_enqueue = "enqueue";
 var M_Call_execute = "execute";
 var M_Call_request = "request";
 var M_Client_newCall = "newCall";
-var M_buffer_readByteArray = "readByteArray";
+var M_buffer_readByteArray = "H";
 var M_contentType_charset = "charset";
 var M_reqbody_contentLength = "contentLength";
 var M_reqbody_contentType = "contentType";
@@ -141,25 +141,25 @@ function printerRequest(request, logString) {
         var contentLength = requestBody[M_reqbody_contentLength]()
         if (contentLength != -1) {
             var tag = headersSize == 0 ? "└─" : "┌─"
-            logString.append("|I   " + tag + "Content-Length: " + contentLength).append("\n")
+            logString.append("|   " + tag + "Content-Length: " + contentLength).append("\n")
         }
     }
     if (headersSize == 0) {
-        logString.append("|J     no headers").append("\n")
+        logString.append("|     no headers").append("\n")
     }
     for (var i = 0; i < headersSize; i++) {
         var name = getHeaderName(headersList, i)
         if (!JavaStringWapper.$new("Content-Type").equalsIgnoreCase(name) && !JavaStringWapper.$new("Content-Length").equalsIgnoreCase(name)) {
             var value = getHeaderValue(headersList, i)
             var tag = i == (headersSize - 1) ? "└─" : "┌─"
-            logString.append("|K   " + tag + name + ": " + value).append("\n")
+            logString.append("|   " + tag + name + ": " + value).append("\n")
         }
     }
     var shielded = filterUrl(httpUrl.toString())
-    if (shielded) {
-        logString.append("|" + "     File Request Body Omit.....").append("\n")
-        return;
-    }
+    // if (shielded) {
+    //     logString.append("|" + "     File Request Body Omit.....").append("\n")
+    //     return;
+    // }
     logString.append("|").append("\n")
     if (!hasRequestBody) {
         logString.append("|" + "--> END ").append("\n")
@@ -182,16 +182,16 @@ function printerRequest(request, logString) {
         //LOG Request Body
         try {
             if (isPlaintext(reqByteString)) {
-                logString.append(splitLine(readBufferString(reqByteString, charset), "|A   ")).append("\n")
+                logString.append(splitLine(readBufferString(reqByteString, charset), "|   ")).append("\n")
                 logString.append("|").append("\n")
                 logString.append("|" + "--> END ").append("\n")
             } else {
-                logString.append(splitLine(hexToUtf8(reqByteString.hex()), "|B   ")).append("\n")
+                logString.append(splitLine(hexToUtf8(reqByteString.hex()), "|   ")).append("\n")
                 logString.append("|").append("\n");
                 logString.append("|" + "--> END  (binary body omitted -> isPlaintext)").append("\n")
             }
         } catch (error) {
-            logString.append(splitLine(hexToUtf8(reqByteString.hex()), "|C   ")).append("\n")
+            logString.append(splitLine(hexToUtf8(reqByteString.hex()), "|   ")).append("\n")
             logString.append("|").append("\n");
             logString.append("|" + "--> END  (binary body omitted -> isPlaintext)").append("\n")
         }
@@ -208,10 +208,10 @@ function printerResponse(response, logString) {
         var request = getFieldValue(response, F_rsp_request)
         var url = getFieldValue(request, F_req_url)
         var shielded = filterUrl(url.toString())
-        if (shielded) {
-            logString.append("|" + "     File Response Body Omit.....").append("\n")
-            return response;
-        }
+        // if (shielded) {
+        //     logString.append("|" + "     File Response Body Omit.....").append("\n")
+        //     return response;
+        // }
         //URL
         logString.append("| URL: " + url).append("\n")
         logString.append("|").append("\n")
@@ -226,11 +226,11 @@ function printerResponse(response, logString) {
         var respHeaderSize = getHeaderSize(respHeadersList)
         logString.append("| Response Headers: ").append("" + respHeaderSize).append("\n")
         if (respHeaderSize == 0) {
-            logString.append("|L     no headers").append("\n")
+            logString.append("|     no headers").append("\n")
         }
         for (var i = 0; i < respHeaderSize; i++) {
             var tag = i == (respHeaderSize - 1) ? "└─" : "┌─"
-            logString.append("|D   " + tag + getHeaderName(respHeadersList, i) + ": " + getHeaderValue(respHeadersList, i)).append("\n")
+            logString.append("|   " + tag + getHeaderName(respHeadersList, i) + ": " + getHeaderValue(respHeadersList, i)).append("\n")
         }
         //Body
         var content = "";
@@ -279,9 +279,10 @@ function printerResponse(response, logString) {
             if (contentLength != 0) {
                 try {
                     var content = readBufferString(rspByteString, charset)
-                    logString.append(splitLine(content, "|E   ")).append("\n")
+                    // logString.append(splitLine(content, "|   ")).append("\n")
+                    logString.append(content).append("\n")
                 } catch (error) {
-                    logString.append(splitLine(hexToUtf8(rspByteString.hex()), "|F   ")).append("\n")
+                    logString.append(splitLine(hexToUtf8(rspByteString.hex()), "|   ")).append("\n")
                 }
 
                 logString.append("| ").append("\n");
@@ -695,7 +696,7 @@ function find() {
                 }
             }
             if (null == clz_Protocol) {
-                console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~ 寻找okhttp特征失败，请确认是否使用okhttp ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~ 寻找okhttp特征失败,请确认是否使用okhttp ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
                 return
             }
             //enum values >> Not to be confused with!
@@ -718,7 +719,7 @@ function find() {
         }
 
         if (!isSupport) {
-            console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~ 寻找okhttp特征失败，请确认是否使用okhttp ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~ 寻找okhttp特征失败,请确认是否使用okhttp ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             return
         }
 
@@ -777,7 +778,7 @@ function main() {
         console.log("------------------------- OkHttp Poker by SingleMan [" + version + "]------------------------------------");
         console.log("API:")
         console.log("   >>>  find()                                         检查是否使用了Okhttp & 是否可能被混淆 & 寻找okhttp3关键类及函数");
-        console.log("   >>>  switchLoader(\"okhttp3.OkHttpClient\")           参数：静态分析到的okhttpclient类名");
+        console.log("   >>>  switchLoader(\"okhttp3.OkHttpClient\")           参数:静态分析到的okhttpclient类名");
         console.log("   >>>  hold()                                         开启HOOK拦截");
         console.log("   >>>  history()                                      打印可重新发送的请求");
         console.log("   >>>  resend(index)                                  重新发送请求");
